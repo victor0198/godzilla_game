@@ -2,12 +2,11 @@ package student.examples.client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-import student.examples.comm.Action;
+import student.examples.com.Action;
+import student.examples.com.IOStream;
 
 public class HBClient {
 
@@ -26,19 +25,19 @@ public class HBClient {
 		}
 		
 		try {
-			BufferedInputStream bin = new BufferedInputStream(socket.getInputStream());
-			BufferedOutputStream bout = new BufferedOutputStream(socket.getOutputStream());
-			
+			IOStream ioStream = new IOStream(
+					new BufferedInputStream(socket.getInputStream()),
+					new BufferedOutputStream(socket.getOutputStream())
+			);
 			//IO loop
 			while (true)
 			{
 				Thread.sleep(1000);
 				System.out.println("Client Sended: POKE");
-				bout.write(Action.POKE.ordinal());
-				bout.flush();
+				ioStream.send(Action.POKE.ordinal());
 				
 				//blocks
-				int in = bin.read();
+				int in = ioStream.receive();
 				if (in >= 0 && in < Action.values().length) {
 					Action action = Action.values()[in];
 					switch (action) {

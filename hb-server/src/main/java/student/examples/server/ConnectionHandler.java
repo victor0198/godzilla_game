@@ -26,13 +26,13 @@ public class ConnectionHandler extends Thread{
 		while (true) {
 			Socket clientSocket;
 			try {
-				synchronized (clients) {
+//				synchronized (clients) {
 					clientSocket = serverSocket.accept(); // avoid sync
-					serverSocket.setSoTimeout(100);
+//					serverSocket.setSoTimeout(100);
 //
 					System.out.println("Client joined");
 					clients.put(clientSocket.getInetAddress(), clientSocket);
-				}
+//				}
 				
 				// break;
 

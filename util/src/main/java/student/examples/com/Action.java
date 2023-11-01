@@ -1,4 +1,4 @@
-package student.examples.comm;
+package student.examples.com;
 
 
 

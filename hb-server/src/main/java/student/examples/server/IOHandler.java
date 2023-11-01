@@ -5,11 +5,18 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import student.examples.comm.Action;
+import student.examples.com.Action;
+import student.examples.com.IOStream;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class IOHandler extends Thread {
 	Map<InetAddress, Socket> clients = new ConcurrentHashMap<>();
@@ -29,11 +36,12 @@ public class IOHandler extends Thread {
 				clients.forEach((inetAddress, clientSocket) -> {
 					
 					try {
-						BufferedInputStream bin = new BufferedInputStream(clientSocket.getInputStream());
-						System.out.println("x="+bin.available());
-						BufferedOutputStream bout = new BufferedOutputStream(clientSocket.getOutputStream());
+						IOStream ioStream = new IOStream(
+								new BufferedInputStream(clientSocket.getInputStream()),
+								new BufferedOutputStream(clientSocket.getOutputStream())
+						);
 						// blocks
-						int in = bin.read();
+						int in = ioStream.receive();
 						if (in >= 0 && in < Action.values().length) {
 							Action action = Action.values()[in];
 							switch (action) {
@@ -44,20 +52,29 @@ public class IOHandler extends Thread {
 								
 								case POKE: {
 									System.out.println("Server Received: POKE");
-									bout.write(Action.OK.ordinal());
-									bout.flush();
+									ioStream.send(Action.OK.ordinal());
 									System.out.println("Server Sended: OK");
 									break;
 								}
 							}
 						} else {
-							System.out.println("Server Received unknown packet: " + in);
+//							System.out.println("Server Received unknown packet: " + in);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
-	
-				});
+					} catch (IllegalBlockSizeException e) {
+                        throw new RuntimeException(e);
+                    } catch (NoSuchPaddingException e) {
+                        throw new RuntimeException(e);
+                    } catch (BadPaddingException e) {
+                        throw new RuntimeException(e);
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
+                    } catch (InvalidKeyException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                });
 			}
 		}
 
