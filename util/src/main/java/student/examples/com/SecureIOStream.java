@@ -37,20 +37,19 @@ public class SecureIOStream extends IOStream{
             byte[] msg = new byte[]{(byte) value};
             cipher.update(msg);
             byte[] ciphertext = cipher.doFinal();
-            super.send(ciphertext[0]);
+            super.sendBytes(ciphertext);
         }catch (Exception e){
 
         }
-
     }
 
     @Override
     public int receive() throws IOException {
-        int value = super.receive();
+        byte[] bytes = super.receiveBytes();
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            cipher.update(new byte[]{(byte) value});
+            cipher.update(bytes);
             byte[] decrypted = cipher.doFinal();
 
             return decrypted[0];

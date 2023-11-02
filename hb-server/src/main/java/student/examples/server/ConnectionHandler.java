@@ -1,5 +1,7 @@
 package student.examples.server;
 
+import student.examples.com.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -13,6 +15,8 @@ public class ConnectionHandler extends Thread{
 	
 	private ServerSocket serverSocket;
 	private Map<InetAddress, Socket> clients = new ConcurrentHashMap<>();
+
+	private final Logger logger = Logger.getInstance();
 	
 	public ConnectionHandler(ServerSocket serverSocket, Map<InetAddress, Socket> clients) {
 		super();
@@ -23,6 +27,7 @@ public class ConnectionHandler extends Thread{
 	@Override
 	public void run(){
 		// connection loop
+//		System.out.println("host address:"+serverSocket.getInetAddress().getHostAddress());
 		while (true) {
 			Socket clientSocket;
 			try {
@@ -30,7 +35,7 @@ public class ConnectionHandler extends Thread{
 					clientSocket = serverSocket.accept(); // avoid sync
 //					serverSocket.setSoTimeout(100);
 //
-					System.out.println("Client joined");
+					logger.info("Client joined");
 					clients.put(clientSocket.getInetAddress(), clientSocket);
 //				}
 				

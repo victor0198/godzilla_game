@@ -7,12 +7,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import student.examples.com.Action;
 import student.examples.com.IOStream;
+import student.examples.com.Logger;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -24,6 +24,8 @@ public class IOHandler extends Thread {
 	public IOHandler(Map<InetAddress, Socket> clients) {
 		this.clients = clients;
 	}
+
+	private final Logger logger = Logger.getInstance();
 	
 	public void run() {
 			
@@ -31,10 +33,14 @@ public class IOHandler extends Thread {
 		while (true) {
 			// iterating every client
 			synchronized (clients) {
-				
-				
+
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 				clients.forEach((inetAddress, clientSocket) -> {
-					
+//					System.out.println("working with"+clientSocket.toString());
 					try {
 						IOStream ioStream = new IOStream(
 								new BufferedInputStream(clientSocket.getInputStream()),
@@ -42,23 +48,24 @@ public class IOHandler extends Thread {
 						);
 						// blocks
 						int in = ioStream.receive();
+
 						if (in >= 0 && in < Action.values().length) {
 							Action action = Action.values()[in];
 							switch (action) {
 								case OK: {
-									System.out.println("Server Received: OK");
+									logger.info("Server Received: OK");
 									break;
 								}
 								
 								case POKE: {
-									System.out.println("Server Received: POKE");
+									logger.info("Server Received: POKE");
 									ioStream.send(Action.OK.ordinal());
-									System.out.println("Server Sended: OK");
+									logger.info("Server Sended: OK");
 									break;
 								}
 							}
 						} else {
-//							System.out.println("Server Received unknown packet: " + in);
+//							logger.warning("Input from client not available: " + in);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

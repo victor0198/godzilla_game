@@ -23,11 +23,24 @@ public class IOStream {
         bufferedOutputStream.flush();
     }
 
+    public void sendBytes(byte[] value) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
+        bufferedOutputStream.write(value);
+        bufferedOutputStream.flush();
+    }
+
     public int receive() throws IOException {
         if(bufferedInputStream.available() > 0){
             return bufferedInputStream.read();
         }
         return -1;
+
+    }
+
+    public byte[] receiveBytes() throws IOException {
+        if(bufferedInputStream.available() > 0){
+            return bufferedInputStream.readAllBytes();
+        }
+        return new byte[]{(byte)-1};
 
     }
 }
