@@ -13,10 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import student.examples.com.Action;
 import student.examples.com.IOStream;
 import student.examples.com.Logger;
+import student.examples.com.SecureIOStream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 public class IOHandler extends Thread {
 	Map<InetAddress, Socket> clients = new ConcurrentHashMap<>();
@@ -42,7 +44,7 @@ public class IOHandler extends Thread {
 				clients.forEach((inetAddress, clientSocket) -> {
 //					System.out.println("working with"+clientSocket.toString());
 					try {
-						IOStream ioStream = new IOStream(
+						SecureIOStream ioStream = new SecureIOStream(
 								new BufferedInputStream(clientSocket.getInputStream()),
 								new BufferedOutputStream(clientSocket.getOutputStream())
 						);
@@ -69,19 +71,9 @@ public class IOHandler extends Thread {
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
-					} catch (IllegalBlockSizeException e) {
-                        throw new RuntimeException(e);
-                    } catch (NoSuchPaddingException e) {
-                        throw new RuntimeException(e);
-                    } catch (BadPaddingException e) {
-                        throw new RuntimeException(e);
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvalidKeyException e) {
-                        throw new RuntimeException(e);
-                    }
+					}
 
-                });
+				});
 			}
 		}
 

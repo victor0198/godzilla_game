@@ -38,7 +38,8 @@ public class IOStream {
 
     public byte[] receiveBytes() throws IOException {
         if(bufferedInputStream.available() > 0){
-            return bufferedInputStream.readAllBytes();
+            byte[] all = bufferedInputStream.readNBytes(8);
+            return all;
         }
         return new byte[]{(byte)-1};
 

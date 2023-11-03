@@ -3,6 +3,7 @@ package student.examples.client;
 import student.examples.com.Action;
 import student.examples.com.IOStream;
 import student.examples.com.Logger;
+import student.examples.com.SecureIOStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -21,15 +22,16 @@ public class IOHandler extends Thread {
         while (true) {
 
             try {
-                IOStream ioStream = new IOStream(
+                SecureIOStream ioStream = new SecureIOStream(
                         new BufferedInputStream(socket.getInputStream()),
                         new BufferedOutputStream(socket.getOutputStream())
                 );
                 //IO loop
                 while (true) {
                     Thread.sleep(1000);
-                    logger.info("Client Sended: POKE");
                     ioStream.send(Action.POKE.ordinal());
+
+                    logger.info("Client Sended: POKE");
 
                     //blocks
                     int in = ioStream.receive();

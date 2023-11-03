@@ -2,11 +2,18 @@ package student.examples.server;
 
 import student.examples.com.Logger;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.util.InputMismatchException;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HBServer {
@@ -35,10 +42,12 @@ public class HBServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		this.ioHandler = new IOHandler(clients);
+
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException, InterruptedException, NoSuchAlgorithmException {
 		//TODO add a logger
 		HBServer hbServer = new HBServer(7777, "127.0.0.1", 100);
 		
